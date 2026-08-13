@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 class PageNumber extends StatefulWidget {
   const PageNumber({
     super.key,
-    required PaginatorController controller,
-  }) : _controller = controller;
+    required this.controller,
+  });
 
-  final PaginatorController _controller;
+  final PaginatorController controller;
 
   @override
   PageNumberState createState() => PageNumberState();
@@ -21,12 +21,12 @@ class PageNumberState extends State<PageNumber> {
   @override
   void initState() {
     super.initState();
-    widget._controller.addListener(update);
+    widget.controller.addListener(update);
   }
 
   @override
   void dispose() {
-    widget._controller.removeListener(update);
+    widget.controller.removeListener(update);
     super.dispose();
   }
 
@@ -39,9 +39,9 @@ class PageNumberState extends State<PageNumber> {
     // though it's state is created 3 times upon first loading
     // of the Custom pager example
     // print(identityHashCode(this));
-    return Text(widget._controller.isAttached
-        ? 'Page: ${1 + ((widget._controller.currentRowIndex + 1) / widget._controller.rowsPerPage).floor()} of '
-            '${(widget._controller.rowCount / widget._controller.rowsPerPage).ceil()}'
+    return Text(widget.controller.isAttached
+        ? 'Page: ${1 + ((widget.controller.currentRowIndex + 1) / widget.controller.rowsPerPage).floor()} of '
+            '${(widget.controller.rowCount / widget.controller.rowsPerPage).ceil()}'
         : 'Page: x of y');
   }
 }

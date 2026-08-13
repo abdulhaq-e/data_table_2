@@ -1,3 +1,10 @@
+## 2.8.0
+- Minimum Flutter SDK raised to 3.47.0 (Dart 3.13+)
+- Updated dependencies (`async`, `intl`, `flutter_lints`, `vector_math`)
+- Flutter 3.47 test alignment (golden images, paginator footer position tolerance)
+- `DataColumn2` and `DataRow2` forward `mouseCursor` and `onHover` from Material `DataColumn`/`DataRow`
+- `DataTableThemeData.headingCellCursor` and `dataRowCursor` are now honored (#356)
+
 ## 2.7.2
 - fix: Removed latency issue with DataCell InkWell #378
 

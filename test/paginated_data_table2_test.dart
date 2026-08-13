@@ -405,7 +405,7 @@ void main() {
     await tester.pump();
     expect(find.text('Rows per page:'), findsOneWidget);
     expect(tester.getTopLeft(find.text('Rows per page:')).dx,
-        18.0); // 14 padding in the footer row, 4 padding from the card
+        closeTo(18.0, 1.0)); // 14 padding in the footer row, 4 padding from the card
   });
   testWidgets('PaginatedDataTable2 custom row height',
       (WidgetTester tester) async {

@@ -1869,7 +1869,7 @@ void main() {
         DataColumn(
           label: const Center(child: Text('Name')),
           tooltip: 'Name',
-          onSort: sortEnabled ? (_, __) {} : null,
+          onSort: sortEnabled ? (_, _) {} : null,
         ),
       ], rows: const <DataRow2>[
         DataRow2(
@@ -1951,7 +1951,7 @@ void main() {
         DataColumn(
           label: const Center(child: Text('column2')),
           tooltip: 'Column2',
-          onSort: (_, __) {},
+          onSort: (_, _) {},
         ),
       ], rows: const <DataRow2>[
         DataRow2(

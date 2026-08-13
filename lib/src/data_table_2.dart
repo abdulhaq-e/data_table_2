@@ -32,6 +32,7 @@ class DataColumn2 extends DataColumn {
       super.tooltip,
       super.numeric = false,
       super.onSort,
+      super.mouseCursor,
       super.headingRowAlignment,
       this.size = ColumnSize.M,
       this.fixedWidth,
@@ -70,13 +71,15 @@ class DataRow2 extends DataRow {
       {super.key,
       super.selected = false,
       super.onSelectChanged,
+      super.onLongPress,
+      super.onHover,
       super.color,
+      super.mouseCursor,
       this.decoration,
       required super.cells,
       this.specificRowHeight,
       this.onTap,
       this.onDoubleTap,
-      super.onLongPress,
       this.onSecondaryTap,
       this.onSecondaryTapDown});
 
@@ -84,13 +87,15 @@ class DataRow2 extends DataRow {
       {super.index,
       super.selected = false,
       super.onSelectChanged,
+      super.onLongPress,
+      super.onHover,
       super.color,
+      super.mouseCursor,
       this.decoration,
       required super.cells,
       this.specificRowHeight,
       this.onTap,
       this.onDoubleTap,
-      super.onLongPress,
       this.onSecondaryTap,
       this.onSecondaryTapDown})
       : super.byIndex();
@@ -100,13 +105,15 @@ class DataRow2 extends DataRow {
     LocalKey? key,
     bool? selected,
     ValueChanged<bool?>? onSelectChanged,
+    GestureLongPressCallback? onLongPress,
+    ValueChanged<bool>? onHover,
     WidgetStateProperty<Color?>? color,
+    WidgetStateProperty<MouseCursor?>? mouseCursor,
     Decoration? decoration,
     List<DataCell>? cells,
     double? specificRowHeight,
     GestureTapCallback? onTap,
     GestureTapCallback? onDoubleTap,
-    GestureLongPressCallback? onLongPress,
     GestureTapCallback? onSecondaryTap,
     GestureTapDownCallback? onSecondaryTapDown,
   }) {
@@ -114,13 +121,15 @@ class DataRow2 extends DataRow {
       key: key ?? this.key,
       selected: selected ?? this.selected,
       onSelectChanged: onSelectChanged ?? this.onSelectChanged,
+      onLongPress: onLongPress ?? this.onLongPress,
+      onHover: onHover ?? this.onHover,
       color: color ?? this.color,
+      mouseCursor: mouseCursor ?? this.mouseCursor,
       decoration: decoration ?? this.decoration,
       cells: cells ?? this.cells,
       specificRowHeight: specificRowHeight ?? this.specificRowHeight,
       onTap: onTap ?? this.onTap,
       onDoubleTap: onDoubleTap ?? this.onDoubleTap,
-      onLongPress: onLongPress ?? this.onLongPress,
       onSecondaryTap: onSecondaryTap ?? this.onSecondaryTap,
       onSecondaryTapDown: onSecondaryTapDown ?? this.onSecondaryTapDown,
     );
@@ -382,7 +391,9 @@ class DataTable2 extends DataTable {
       required WidgetStateProperty<Color?>? overlayColor,
       required CheckboxThemeData? checkboxTheme,
       required bool tristate,
-      required double? rowHeight}) {
+      required double? rowHeight,
+      ValueChanged<bool>? onHover,
+      MouseCursor? mouseCursor}) {
     final DataTableThemeData dataTableTheme = DataTableTheme.of(context);
 
     final double effectiveHorizontalMargin = horizontalMargin ??
@@ -418,7 +429,9 @@ class DataTable2 extends DataTable {
     if (onRowTap != null) {
       contents = TableRowInkWell(
         onTap: onRowTap,
+        onHover: onHover,
         overlayColor: overlayColor,
+        mouseCursor: mouseCursor,
         child: contents,
       );
     }
@@ -437,6 +450,7 @@ class DataTable2 extends DataTable {
       required bool ascending,
       required double effectiveHeadingRowHeight,
       required WidgetStateProperty<Color?>? overlayColor,
+      required MouseCursor? mouseCursor,
       DataColumn2? column,
       required Function(List<DataColumn>, DataColumn2, double) onColumnResized,
       required MainAxisAlignment headingRowAlignment}) {
@@ -489,6 +503,7 @@ class DataTable2 extends DataTable {
     label = InkWell(
       onTap: onSort,
       overlayColor: overlayColor,
+      mouseCursor: mouseCursor,
       child: label,
     );
     if (column != null && column.isResizable) {
@@ -545,6 +560,8 @@ class DataTable2 extends DataTable {
       required GestureTapCallback? onRowSecondaryTap,
       required GestureTapDownCallback? onRowSecondaryTapDown,
       required VoidCallback? onSelectChanged,
+      required ValueChanged<bool>? onRowHover,
+      required MouseCursor? mouseCursor,
       required WidgetStateProperty<Color?>? overlayColor}) {
     final ThemeData themeData = Theme.of(context);
     final DataTableThemeData dataTableTheme = DataTableTheme.of(context);
@@ -616,7 +633,8 @@ class DataTable2 extends DataTable {
         onRowDoubleTap != null ||
         onRowLongPress != null ||
         onRowSecondaryTap != null ||
-        onRowSecondaryTapDown != null) {
+        onRowSecondaryTapDown != null ||
+        onRowHover != null) {
       // row level
       label = TableRowInkWell(
         onTap: onRowTap ?? onSelectChanged,
@@ -624,7 +642,9 @@ class DataTable2 extends DataTable {
         onLongPress: onRowLongPress,
         onSecondaryTap: onRowSecondaryTap,
         onSecondaryTapDown: onRowSecondaryTapDown,
+        onHover: onRowHover,
         overlayColor: overlayColor,
+        mouseCursor: mouseCursor,
         child: label,
       );
     }
@@ -881,6 +901,10 @@ class DataTable2 extends DataTable {
               tableColumnWidths[displayColumnIndex] =
                   FixedColumnWidth(widths[dataColumnIndex]);
 
+              final headerStates = <WidgetState>{
+                if (column.onSort == null) WidgetState.disabled,
+              };
+
               var h = _buildHeadingCell(
                 context: context,
                 padding: padding,
@@ -895,6 +919,8 @@ class DataTable2 extends DataTable {
                 sorted: dataColumnIndex == sortColumnIndex,
                 ascending: sortAscending,
                 overlayColor: effectiveHeadingRowColor,
+                mouseCursor: column.mouseCursor?.resolve(headerStates) ??
+                    dataTableTheme.headingCellCursor?.resolve(headerStates),
                 headingRowAlignment: column.headingRowAlignment ??
                     dataTableTheme.headingRowAlignment ??
                     MainAxisAlignment.start,
@@ -930,6 +956,9 @@ class DataTable2 extends DataTable {
 
               for (final DataRow row in rows) {
                 final DataCell cell = row.cells[dataColumnIndex];
+                final states = <WidgetState>{
+                  if (row.selected) WidgetState.selected,
+                };
                 //dataRows[rowIndex].children![displayColumnIndex]
 
                 var c = _buildDataCell(
@@ -956,6 +985,9 @@ class DataTable2 extends DataTable {
                     onSelectChanged: row.onSelectChanged != null
                         ? () => row.onSelectChanged!(!row.selected)
                         : null,
+                    onRowHover: row.onHover,
+                    mouseCursor: row.mouseCursor?.resolve(states) ??
+                        dataTableTheme.dataRowCursor?.resolve(states),
                     overlayColor: row.color ?? effectiveDataRowColor);
 
                 if (displayColumnIndex < actualFixedColumns) {
@@ -1149,8 +1181,7 @@ class DataTable2 extends DataTable {
                       fixedColumnsTable == null
                   ? null
                   : Column(mainAxisSize: MainAxisSize.min, children: [
-                      if (fixedTopLeftCornerTable != null)
-                        fixedTopLeftCornerTable,
+                      ?fixedTopLeftCornerTable,
                       if (fixedColumnsTable != null)
                         Flexible(
                             fit: FlexFit.loose,
@@ -1186,8 +1217,7 @@ class DataTable2 extends DataTable {
                         : Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              if (fixedColumnAndCornerCol != null)
-                                fixedColumnAndCornerCol,
+                              ?fixedColumnAndCornerCol,
                               if (fixedRowsAndCoreCol != null)
                                 Flexible(
                                     fit: FlexFit.tight,
@@ -1266,7 +1296,9 @@ class DataTable2 extends DataTable {
               : -1;
 
       var rowIndex = 0;
+      final dataTableTheme = DataTableTheme.of(context);
       for (final DataRow row in rows) {
+        final states = <WidgetState>{if (row.selected) WidgetState.selected};
         var x = _buildCheckbox(
             context: context,
             checked: row.selected,
@@ -1283,7 +1315,10 @@ class DataTable2 extends DataTable {
             tristate: false,
             rowHeight: rows[rowIndex] is DataRow2
                 ? (rows[rowIndex] as DataRow2).specificRowHeight
-                : null);
+                : null,
+            onHover: row.onHover,
+            mouseCursor: row.mouseCursor?.resolve(states) ??
+                dataTableTheme.dataRowCursor?.resolve(states));
 
         if (fixedCornerRows != null && rowIndex < fixedCornerRows.length - 1) {
           fixedCornerRows[rowIndex + 1].children[0] = x;

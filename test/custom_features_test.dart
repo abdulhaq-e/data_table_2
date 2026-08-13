@@ -1969,6 +1969,33 @@ void main() {
     expect((d.first.widget as Theme).child.runtimeType, Checkbox);
   });
 
+  testWidgets('DataTableThemeData cursor themes are applied',
+      (WidgetTester tester) async {
+    await wrapWidgetSetSurf(
+      tester,
+      Theme(
+        data: ThemeData(
+          dataTableTheme: const DataTableThemeData(
+            headingCellCursor: WidgetStatePropertyAll(SystemMouseCursors.grab),
+            dataRowCursor: WidgetStatePropertyAll(SystemMouseCursors.move),
+          ),
+        ),
+        child: buildTable(),
+      ),
+      const Size(800, 400),
+    );
+    await tester.pumpAndSettle();
+
+    final sortableHeaderInkWell = tester
+        .widgetList<InkWell>(find.byType(InkWell))
+        .firstWhere((inkWell) => inkWell.onTap != null);
+    expect(sortableHeaderInkWell.mouseCursor, SystemMouseCursors.grab);
+
+    final rowInkWell =
+        tester.widget<TableRowInkWell>(find.byType(TableRowInkWell).first);
+    expect(rowInkWell.mouseCursor, SystemMouseCursors.move);
+  });
+
   testWidgets('DataTable2 heading checkbox', (WidgetTester tester) async {
     final List<DataColumn2> columns = [
       const DataColumn2(label: Text('Column1')),

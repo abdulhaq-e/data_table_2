@@ -683,7 +683,7 @@ List<Dessert> _dessertsX3 = _desserts.toList()
   ..addAll(_desserts.map((i) => Dessert('${i.name} x3', i.calories, i.fat,
       i.carbs, i.protein, i.sodium, i.calcium, i.iron)));
 
-_showSnackbar(BuildContext context, String text, [Color? color]) {
+void _showSnackbar(BuildContext context, String text, [Color? color]) {
   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
     backgroundColor: color,
     duration: const Duration(seconds: 1),
