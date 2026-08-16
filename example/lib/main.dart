@@ -1,7 +1,7 @@
 import 'package:example/screens/data_table2_fixed_nm.dart';
 import 'package:example/screens/data_table2_resizable.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import 'nav_helper.dart';
 import 'screens/async_paginated_data_table2.dart';
